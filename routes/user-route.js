@@ -2,19 +2,35 @@ const router = require('express').Router()
 const mongoose = require('mongoose')
 const bcrypt = require('bcryptjs') 
 const jwt = require('jsonwebtoken')
+var request = require('request')
 
 // import user-model
 const User = require('../models/user-model')
+const { json } = require('body-parser')
+//import middleware
+const auth = require('../middleware/auth')
+const mail = require('../middleware/mailing')
 
 // ROUTES
 // Home route
 router.get('/', (req, res) => {
-    // res.render mo rito yung home page
+    res.render("index.ejs")
 })
 // Registration route
 router.get('/register', (req, res) => {
-    // res.render mo rito yung registration page
+    res.render("register.ejs")
 })
+// terms&privacy route
+router.get('/term&policy', (req, res) => {
+    res.render("terms.ejs")
+})
+// forgotpass route
+router.get('/forgotPassword', (req, res) => {
+    res.render("fpw-confirm.ejs")
+})
+
+router.post('/emailfpw', mail.forgot_pass)
+
 router.post('/register', async(req, res) => {
     var username = req.body.uName;
     var password = req.body.password;
@@ -64,10 +80,6 @@ router.post('/register', async(req, res) => {
     }
 })
 
-// Login Route
-router.get('/login', (req, res) => {
-    //res.render mo rito yung login page
-})
 router.post('/login', async (req, res) => {
     var unlog = req.body.unlog
     var pwlog = req.body.pwlog
@@ -85,7 +97,20 @@ router.post('/login', async (req, res) => {
                         res.json({msg: "logged in as an admin"})
                     }
                     else{
-                        res.json({msg:"Logged in as a user"})
+                        const token = jwt.sign({ id: user.username}, process.env.JWT_TOKEN)
+                        var url = process.env.CLIENT_URL + "/login/"+token
+                        // console.log(url)
+                        // console.log(token)
+                        //request(url, function(error,response,body){
+                          //  res.status(200).send(body)
+                            res.send({
+                                token,
+                                user:{
+                                    name: user.username,
+                                    email: user.email
+                                },
+                            })
+                          //})
                     }
                 }
                 else{
@@ -108,12 +133,32 @@ router.post('/login', async (req, res) => {
 })
 
 
-
-router.get('/forgotPassword', (req, res) => {
-    //res.render("fpw.ejs")
+// Login Route
+router.get('/login/:token', (req, res) => {
+    const token = req.params.token
+    console.log(token)
+    console.log("geh")
+    res.render("admin.ejs")
 })
-router.get('/terms&policy', (req, res) => {
-    //res.render("terms.ejs")
-})
 
+router.post('/token_validation',auth, async(req,res) =>{
+    try {
+        const token = req.header("x-auth-token")
+        console.log(token)
+        if(!token){
+            return res.json(false)
+        }else{
+            const verified = jwt.verify(token, process.env.JWT_TOKEN)
+            if(!verified){
+                return res.json(false)
+            }else{
+                const user = await User.findOne(verified.id)
+                console.log(user)
+                console.log(verified)
+            }
+        }
+    } catch (err) {
+        res.status(500).json({error: err.message})
+    }
+ })
 module.exports = router

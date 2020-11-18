@@ -1,0 +1,76 @@
+<!--
+
+A Group 6 (KCFC) Project: eBooks and PDF Online Market System 
+Product Owner/Scrum Master: Mark Stephen Ranada
+
+Developers:
+Reniel Avellano
+Shannon Del Rosario
+Klark Jasper Sisperez
+Jan Calvin Tolentino
+
+BSIT - NS - 3A
+
+-->
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Lighten</title>
+        <link rel="icon" href="/src/512x512.png" type="image/x-icon">
+        <link rel ="stylesheet" href="/css/styles.css">
+        <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet'>
+        <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet'>
+        <link href='https://fonts.googleapis.com/css?family=Lora' rel='stylesheet'>
+    </head>
+    <body>
+        <!-- Video background (Copyright-free stock footage yan so no worries) -->
+        <video autoplay muted loop id="BGvid">
+            <source src="/src/bg-crfree-2.mp4" type="video/mp4">
+        </video>
+        <div class="opacity">
+            <div class="main">
+                <div class="row">
+                    <!-- Logo/Tagline area -->
+                    <div class="column" id="logopart">
+                        <br><br>
+                        <img src="/src/512x512 White.png" id="logo" alt="logo">
+                        <h1>Lighten</h1>
+                        <p><i>Enlightening your Knowledge since 2020</i></p>
+                    </div>
+                    <!-- Login form area -->
+                    <div class="column" id="regiform">
+                        <form> <!-- START OF BACKEND FORM (Connect HTML Form to your desired Back-end/DBMS) -->
+                            <div class="container">
+                                <h2>Register an Account</h2>
+                                <p>Follow these easy steps to access <b>Lighten's</b> full capabilities!</p>
+                                <hr id="borderreg">
+                                <label for="unreg"><b>Username:</b></label>
+                                <input type="text" placeholder="Enter Username" name="unreg" id="unreg" required>
+                                <label for="email"><b>Email:</b></label>
+                                <input type="text" placeholder="Enter Email" name="email" id="email" required>
+                                <label for="pwreg"><b>Password:</b></label>
+                                <input type="password" placeholder="Enter Password" name="pwreg" id="pwreg" pattern=".{8,}" required title="8 characters minimum">
+                                <label for="rpsw"><b>Confirm Password:</b></label>
+                                <input type="password" placeholder="Repeat Password" name="rpsw" id="rpsw" pattern=".{8,}" required title="8 characters minimum">
+
+                                <p>By creating an account you agree to our <a href="terms&policy" target="popup" onclick="window.open('term&policy','Terms & Privacy','width=600,height=400')" id="lg">Terms & Policy</a>.</p><br>
+                                <div class="clearfix"></div>
+                                    <div class="regiconbutton" id="regiconbtn">
+                                        <button>Register</button>
+                                   </div>
+                                </div>
+                            </div>
+                        </form> <!-- END OF BACKEND FORM -->
+                        <div class="container">
+                            <hr>
+                            <p>Want to go back to Log-in page? <a id="lg" href="/user">Click Here.</a></p>
+                            <br>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

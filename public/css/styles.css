@@ -1,0 +1,273 @@
+*{
+    box-sizing: border-box;
+}
+
+body{
+    background-color: #5f5f5f;
+    margin: 0;
+    font-size: 18px;
+}
+
+#BGvid{
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    min-width: 100%; 
+    min-height: 100%;
+}
+
+#logopart h1{
+    font-family: 'Lora';
+}
+
+#logopart p{
+    font-family: 'Montserrat';
+    font-size: 14px;
+}
+
+#logo{
+    width: 300px;
+    height: 300px;
+}
+
+#loginform,
+#regiform,
+#fpwform{
+    font-family: 'Roboto';
+    text-align: left;
+}
+
+hr{
+    width: 100%;
+}
+
+.opacity{
+    position: fixed;
+    background: rgba(0, 0, 0, 0.6);
+    color: #f1f1f1;
+    right: 0;
+    bottom: 0;
+    min-width: 100%; 
+    min-height: 100%;
+    display: flex;
+    justify-content: center;
+    flex-flow: column;
+    text-align: center;
+}
+
+.main{
+    background: rgba(0, 0, 0, 0.6);
+    color: #f1f1f1;
+    min-width: 100%; 
+    min-height: 100%;
+    display: flex;
+    justify-content: center;
+    flex-flow: column;
+    text-align: center;
+    padding: 10px 10px;
+}
+
+.main h1{
+    font-size: 300%;
+    line-height: 120%;
+}
+
+.main h1,
+.main p{
+    margin: 3px;
+    padding: 3px;
+}
+
+.loginbutton button{
+    background-color: #111;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    border-radius: 4px;
+
+}
+
+.fpwbutton button{
+    background-color: #111;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    border-radius: 4px;
+
+}
+
+.loginbutton button:hover,
+.regibutton button:hover{
+    animation-name: hover;
+    animation-duration: 1s;
+    animation-fill-mode: forwards;
+    border-radius: 4px;
+}
+
+@keyframes hover{
+    from{
+        color: #141414;
+    }
+    to{
+        background-color: #f2f8f5;
+        color: #141414;
+    }
+}
+
+.column {
+    float: left;
+    width: 50%;
+    padding: 10px;
+}
+  
+.row:after {
+    content: "";
+    display: table;
+    clear: both;
+  }
+
+.container {
+    padding: 10px;
+}
+
+.container .column {
+    float: left;
+    max-width: 25%;
+    min-width: 20%;
+    padding: 10px;
+}
+
+input[type=text] {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    box-sizing: border-box;
+    border: none;
+    background-color: #191919;
+    color: white;
+}
+
+input[type=password] {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    box-sizing: border-box;
+    border: none;
+    background-color: #191919;
+    color: white;
+}
+
+#fpw{
+    color: #f2f8f5;
+    line-height: 100%;
+}
+
+#lg{
+    color: #f2f8f5;
+    line-height: 100%;
+}
+
+.regibutton button{
+    background-color: #111;
+    color: white;
+    padding: 14px 20px;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    border-radius: 4px;
+}
+
+  
+
+#borderreg {
+    border: 1px solid #141414;
+    margin-bottom: 25px;
+}
+   
+  
+.close {
+    position: absolute;
+    right: 35px;
+    top: 15px;
+    font-size: 40px;
+    font-weight: bold;
+    color: #f1f1f1;
+  }
+
+.clearfix::after {
+    content: "";
+    clear: both;
+    display: table;
+}
+
+.regiconbutton button{
+    background-color: #e0dfdf;
+    color: rgb(32, 32, 32);
+    padding: 14px 20px;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    border-radius: 4px;
+}
+
+.regiconbutton button:hover{
+    background-color: #b3b3b3;
+}
+
+.bgterms{
+    background: rgba(0, 0, 0, 0.6);
+    color: #f1f1f1;
+    margin: 20px;
+}
+
+.bgterms h1,
+.bgterms h2,
+.bgterms h3,
+.bgterms strong{
+    font-family: 'Roboto';
+}
+
+.bgterms strong{
+    color: #cacaca;
+}
+
+.bgterms p,
+.bgterms li{
+    font-family: 'Montserrat';
+}
+
+.bgterms a{
+    color: rgb(32, 32, 32);
+
+}
+
+@media screen and (max-width: 600px) {
+    #BGvid{
+        display: none;
+    }
+    .column {
+      width: 100%;
+    }
+    .title h1{
+        font-size: 150%;
+        line-height: 60%;       
+    }   
+    #logo{
+        display: none;
+    }
+    body{
+        font-size: 70%;
+    }
+    .loginbutton button,
+    .regibutton button,
+    .fpwbutton button{
+        background-color: #e4e4e4;
+        color: #000000;
+    }
+}
