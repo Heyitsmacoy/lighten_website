@@ -27,8 +27,7 @@ mongoose.connect(process.env.DB_CONNECTION, {
 // setting up routes
 const userRoute = require('./routes/user-route')
 const regRoute = require('./routes/user-route')
-app.use('/user', userRoute)
-app.use('/reg', regRoute)
+app.use('/users', userRoute)
 
 //routes
 app.use(expressLayouts)
