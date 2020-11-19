@@ -1,8 +1,6 @@
 const express = require('express')
 const mongoose = require('mongoose')
 const cors = require('cors')
-const expressLayouts = require('express-ejs-layouts');
-const path = require('path')
 
 const bodyParser = require('body-parser')
 require('dotenv').config()
@@ -26,14 +24,7 @@ mongoose.connect(process.env.DB_CONNECTION, {
 
 // setting up routes
 const userRoute = require('./routes/user-route')
-const regRoute = require('./routes/user-route')
 app.use('/users', userRoute)
-
-//routes
-app.use(expressLayouts)
-app.set("view engine", "ejs")
-app.set("views", path.join(__dirname + "/views"))
-app.use(express.static(path.join(__dirname, '/public')))
 
 // assigning port
 const PORT = process.env.PORT || 5000
