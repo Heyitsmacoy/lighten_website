@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken')
 const mailgun = require("mailgun-js")
 const DOMAIN = "sandbox21a46e953d154129a601ac7b91d76885.mailgun.org"
 const mg = mailgun({apiKey: process.env.MAILGUN_APIKEY, domain: DOMAIN})
+const validator = require('email-validator')
 
 //import authentication
 const auth = require('../middleware/auth')
@@ -16,16 +17,24 @@ router.post('/register', async(req, res) => {
     // VALIDATIONS
     try{
         const {email, password, passwordCheck, displayName} =req.body
+        const valid_email = validator.validate(email);
+
+        console.log(valid_email)
+        if(!valid_email){
+            console.log("false")
+            return res
+                .status(400)
+                .json({ msg: "please enter existing email" })
+        }
+
         // check if passwords match
         if(password !== passwordCheck){
-            console.log("pass")
             return res
                 .status(400)
                 .json({ msg: "Passwords do not match" })
         }
         // check if there as in exisiting username
         const existingUser = await User.findOne({ username: displayName })
-        console.log("uname")
             if(existingUser){
                 return res
                     .status(400)
@@ -35,7 +44,6 @@ router.post('/register', async(req, res) => {
                 //check if there is an existing email
                 const exisitingEmail = await User.findOne({ email: email })
                 if(exisitingEmail){
-                    console.log("em")
                     return res
                         .status(400)
                         .json({ msg: "Email already exists"})
@@ -84,7 +92,6 @@ router.post('/login', async (req, res) => {
                     }
                     else{
                         const token = jwt.sign({id: user._id}, process.env.JWT_TOKEN)
-                        console.log(token)
                         res.json({
                             token,
                             user:{
@@ -123,7 +130,6 @@ router.post('/forgotpass', async (req, res) => {
         }
         const veri_code = getRandomInt(100000, 999999)
         const email = req.body.email
-        console.log(email)
         const user = await User.findOne({email:email})
         if(!user){
             return res
@@ -140,7 +146,9 @@ router.post('/forgotpass', async (req, res) => {
                     
                 `
             }
+            const token = jwt.sign({id: user._id}, process.env.JWT_TOKEN)
             res.json({
+                token,
                 user:{
                     id: user._id,
                     name: user.username,
@@ -162,21 +170,53 @@ router.post('/tokenIsValid', async (req, res) => {
             return res.json(false)
         }
 
-        const verified = jwt.verify(token, process.enc.JWT_TOKEN)
+        const verified = jwt.verify(token, process.env.JWT_TOKEN)
         if(!verified){ 
             return res.json(false)
         }
 
-        const user = await User.findOne(verified.id)
+        const user = await User.findById(verified.id)
         if(!user){ 
             return res.json(false)
         }
+
         return res.json(true)
 
     } catch(err){
         res.status(500).json({ error: err.message })
     }
 
+})
+
+router.post('/changepass', async (req,res) => {
+    try{   
+        const {vericode, password, passwordCheck} = req.body
+        const code = req.header("x-veri-code")
+        const token = req.header("x-auth-token")
+        const verified = jwt.verify(token, process.env.JWT_TOKEN)
+        if(vericode === code && password === passwordCheck){
+            const salt = await bcrypt.genSalt(10)
+            const hashedPassword = await bcrypt.hash(password, salt)
+            const user = await User.findOne({_id:verified.id})
+            if(user){
+                user.password = hashedPassword
+                const updatepass = await user.save();
+                res.json(updatepass)
+
+            }
+            else{
+                res.status(401).json({ msg: "User doesn't exist" })
+            }
+        }
+        else{
+            if(vericode !== code) {return res.json(false)}
+            if(password !== passwordCheck) {return res.json(false)}
+        }
+  
+    }
+    catch(err){
+        res.status(500).json({ error: err.message })
+    }
 })
 
 router.get("/", auth, async(req, res) => {
