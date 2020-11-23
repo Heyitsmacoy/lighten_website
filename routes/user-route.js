@@ -77,8 +77,6 @@ router.post('/login', async (req, res) => {
             // comparing of password and hashed password
             bcrypt.compare(password,user.password, (err, isMatch) => {
                 if(isMatch){
-                    // check designations
-                    if(user.designation === "admin"){
                         const token = jwt.sign({id: user._id}, process.env.JWT_TOKEN)
                         res.json({
                             token,
@@ -86,21 +84,11 @@ router.post('/login', async (req, res) => {
                                 id: user._id,
                                 name: user.username,
                                 email: user.email,
+                                role: user.designation, // check designations
                             },
                         })
 
-                    }
-                    else{
-                        const token = jwt.sign({id: user._id}, process.env.JWT_TOKEN)
-                        res.json({
-                            token,
-                            user:{
-                                id: user._id,
-                                name: user.username,
-                                email: user.email,
-                            },
-                        })
-                    }
+                    
                 }
                 else{
                     return res
