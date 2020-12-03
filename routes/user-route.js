@@ -70,9 +70,9 @@ router.post('/register', async(req, res) => {
 router.post('/login', async (req, res) => {
     // VALIDATIONS
     try{
-        const {email, password, displayName} = req.body
+        const {email, password} = req.body
         // check for username or email
-        const user = await User.findOne({$or: [{username:displayName}, {email:email}]})
+        const user = await User.findOne({ email:email })
         if(user){
             // comparing of password and hashed password
             bcrypt.compare(password,user.password, (err, isMatch) => {
@@ -87,7 +87,6 @@ router.post('/login', async (req, res) => {
                                 role: user.designation, // check designations
                             },
                         })
-
                     
                 }
                 else{
