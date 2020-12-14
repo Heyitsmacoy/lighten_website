@@ -8,8 +8,9 @@ const validator = require('email-validator')
 
 //import authentication
 const auth = require('../middleware/auth')
-// import user-model
+// import models
 const User = require('../models/user-model')
+const User = require('../models/book-model')
 
 
 // ROUTES
@@ -212,6 +213,54 @@ router.get("/", auth, async(req, res) => {
         displayName: user.username,
         id: user._id,
     })
+})
+
+router.get("/addBook",auth, async(req, res) => {
+    try {
+        const {isbn, book_title, author, publisher, date_published, genre,  price, } =req.body
+        if(req.user == process.env.ADMIN){
+            const newBook = new Book({
+                isbn: isbn,
+                book_title: book_title,
+                author: author,
+                publisher: publisher,
+                date_published: date_published,
+                genre: genre,
+                rating: 0,
+                price: price,
+            })
+            const savedBook = await newBook.save()
+            res.json(savedBook)
+        }
+        else{
+            res.status(401).json({ msg: "Authorization Denied" })
+        }
+    } catch (err) {
+        res.status(500).json({error:err.message})
+    }
+})
+
+router.get("/updateBook",auth, async(req, res) => {
+    try {
+        const {isbn, book_title, author, publisher, date_published, genre,  price, } =req.body
+        const book = await Book.findOne({isbn:isbn})
+        if(req.user == process.env.ADMIN){
+            book.isbn = isbn;
+            book.book_title = book_title;
+            book.author = author;
+            book.publisher = publisher;
+            book.date_published = date_published;
+            book.genre = genre;
+            book.price = price;
+            const updateBook = await book.save();
+            res.json(updateBook)
+        }
+        else{
+            res.status(401).json({ msg: "Authorization Denied" })
+        }
+    } catch (err) {
+        res.status(500).json({error:err.message})
+    }
 })
 
 module.exports = router
