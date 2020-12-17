@@ -220,7 +220,7 @@ router.get("/", auth, async(req, res) => {
 //parang register lang yung algo
 router.post("/addBook",auth, async(req, res) => {
     try {
-        const {isbn, book_title, author, publisher, date_published, genre,  price, } =req.body
+        const {isbn, book_title, author, publisher, date_published, genre,  price, type} =req.body
         //yung req.user dito from auth siya yung sinend ko don na id
         if(req.user == process.env.ADMIN){ //nilagay ko sa env yung ID ng main admin namen tas kinocompare ko
             const newBook = new Book({     //pero mukhang babaguhin ko naman yan kase di na lang isa magiging admin naten
@@ -232,6 +232,7 @@ router.post("/addBook",auth, async(req, res) => {
                 genre: genre,
                 rating: 0,
                 price: price,
+                type: type
             })
             const savedBook = await newBook.save()
             res.json(savedBook)
@@ -247,7 +248,7 @@ router.post("/addBook",auth, async(req, res) => {
 //parang forgot password lang yung algo
 router.post("/updateBook",auth, async(req, res) => {
     try {
-        const {isbn, book_title, author, publisher, date_published, genre,  price, } =req.body
+        const {isbn, book_title, author, publisher, date_published, genre,  price, type} =req.body
         const book = await Book.findOne({isbn:isbn}) //hanapin ko lang yung book
         if(req.user == process.env.ADMIN){ // check niyo sa addbook yung comment
             book.isbn = isbn;
@@ -257,6 +258,7 @@ router.post("/updateBook",auth, async(req, res) => {
             book.date_published = date_published;
             book.genre = genre;
             book.price = price;
+            book.type = type;
             const updateBook = await book.save();
             res.json(updateBook)
         }
@@ -267,6 +269,25 @@ router.post("/updateBook",auth, async(req, res) => {
         res.status(500).json({error:err.message})
     }
 })
+
+router.post('/deleteUser',auth, async(req,res) => {
+    try {
+        const {isbn} =req.body
+        const book = await Book.findOne({isbn})
+        if(req.user == process.env.ADMIN){
+            user.status = false
+            const deleteBook = await book.save();
+            res.json(deleteBook)
+        }
+        else{
+            res.status(401).json({ msg: "Authorization Denied" })
+        }
+    } catch (err) {
+        res.status(500).json({error:err.message})
+    }
+})
+
+
 //may currently adduser na sa front pero di pa eto yung ginagamit na function register muna
 //kase sa function na to pwede nang imodify yung designation
 router.post('/addUser', async(req, res) => {
