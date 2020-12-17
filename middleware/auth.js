@@ -11,7 +11,7 @@ const auth = (req, res, next) => {
         if(!verified){
             return res.status(401).json({msg: "token verification failed or authorization denied"})
         }else{
-            req.user = verified.id
+            req.user = verified.id //yung sinesend ko sa function
             next();
         }
     }catch(err){

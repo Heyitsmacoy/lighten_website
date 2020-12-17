@@ -10,7 +10,7 @@ const validator = require('email-validator')
 const auth = require('../middleware/auth')
 // import models
 const User = require('../models/user-model')
-const User = require('../models/book-model')
+const Book = require('../models/book-model')
 
 
 // ROUTES
@@ -75,6 +75,7 @@ router.post('/login', async (req, res) => {
         // check for username or email
         const user = await User.findOne({ email:email })
         if(user){
+            console.log("existing");
             // comparing of password and hashed password
             bcrypt.compare(password,user.password, (err, isMatch) => {
                 if(isMatch){
@@ -85,7 +86,7 @@ router.post('/login', async (req, res) => {
                                 id: user._id,
                                 name: user.username,
                                 email: user.email,
-                                role: user.designation, // check designations
+                                role: user.designation, //check designations
                             },
                         })
                     
@@ -215,12 +216,15 @@ router.get("/", auth, async(req, res) => {
     })
 })
 
-router.get("/addBook",auth, async(req, res) => {
+//with auth to only make it work if the token is admin
+//parang register lang yung algo
+router.post("/addBook",auth, async(req, res) => {
     try {
         const {isbn, book_title, author, publisher, date_published, genre,  price, } =req.body
-        if(req.user == process.env.ADMIN){
-            const newBook = new Book({
-                isbn: isbn,
+        //yung req.user dito from auth siya yung sinend ko don na id
+        if(req.user == process.env.ADMIN){ //nilagay ko sa env yung ID ng main admin namen tas kinocompare ko
+            const newBook = new Book({     //pero mukhang babaguhin ko naman yan kase di na lang isa magiging admin naten
+                isbn: isbn, 
                 book_title: book_title,
                 author: author,
                 publisher: publisher,
@@ -240,11 +244,12 @@ router.get("/addBook",auth, async(req, res) => {
     }
 })
 
-router.get("/updateBook",auth, async(req, res) => {
+//parang forgot password lang yung algo
+router.post("/updateBook",auth, async(req, res) => {
     try {
         const {isbn, book_title, author, publisher, date_published, genre,  price, } =req.body
-        const book = await Book.findOne({isbn:isbn})
-        if(req.user == process.env.ADMIN){
+        const book = await Book.findOne({isbn:isbn}) //hanapin ko lang yung book
+        if(req.user == process.env.ADMIN){ // check niyo sa addbook yung comment
             book.isbn = isbn;
             book.book_title = book_title;
             book.author = author;
@@ -262,5 +267,98 @@ router.get("/updateBook",auth, async(req, res) => {
         res.status(500).json({error:err.message})
     }
 })
+//may currently adduser na sa front pero di pa eto yung ginagamit na function register muna
+//kase sa function na to pwede nang imodify yung designation
+router.post('/addUser', async(req, res) => {
+    // VALIDATIONS
+    try{
+        const {email, password, passwordCheck, displayName, designation} =req.body
+        const valid_email = validator.validate(email);
+
+        console.log(valid_email)
+        if(!valid_email){
+            console.log("false")
+            return res
+                .status(400)
+                .json({ msg: "please enter existing email" })
+        }
+
+        // check if passwords match
+        if(password !== passwordCheck){
+            return res
+                .status(400)
+                .json({ msg: "Passwords do not match" })
+        }
+        // check if there as in exisiting username
+        const existingUser = await User.findOne({ username: displayName })
+            if(existingUser){
+                return res
+                    .status(400)
+                    .json({ msg: "Username already taken" })
+            }
+            else{
+                //check if there is an existing email
+                const exisitingEmail = await User.findOne({ email: email })
+                if(exisitingEmail){
+                    return res
+                        .status(400)
+                        .json({ msg: "Email already exists"})
+                }
+                else{
+                    //hashing passowrd
+                    const salt = await bcrypt.genSalt(10)
+                    const hashedPassword = await bcrypt.hash(password, salt)
+                    //saving data to database
+                    const newUser = new User({
+                        username: displayName,
+                        password: hashedPassword,
+                        email: email,
+                        designation: designation
+                    })
+                    const savedUser = await newUser.save()
+                    res.json(savedUser) 
+                }
+            }
+    }catch(err){
+        res.status(500).json({error:err.message})
+    }
+})
+//same lang din ng updatebook
+router.post('/updateUser',auth, async(req,res) => {
+    try {
+        const {email, username, password} =req.body
+        const user = await User.findOne({username:username})
+        if(req.user == process.env.ADMIN){
+            user.email = email
+            user.username = username
+            user.password = password
+            const updateUser = await user.save();
+            res.json(updateUser)
+        }
+        else{
+            res.status(401).json({ msg: "Authorization Denied" })
+        }
+    } catch (err) {
+        res.status(500).json({error:err.message})
+    }
+})
+//eto inuupdate ko lang yung status into false
+router.post('/deleteUser',auth, async(req,res) => {
+    try {
+        const {email, username} =req.body
+        const user = await User.findOne({email:email})
+        if(req.user == process.env.ADMIN){
+            user.status = false
+            const deleteUser = await user.save();
+            res.json(deleteUser)
+        }
+        else{
+            res.status(401).json({ msg: "Authorization Denied" })
+        }
+    } catch (err) {
+        res.status(500).json({error:err.message})
+    }
+})
+
 
 module.exports = router
